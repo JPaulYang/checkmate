@@ -1,6 +1,12 @@
+// API endpoint - automatically detects environment
+const API_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:3000/api'
+    : `${window.location.origin}/api`;
+
 // Global variables
 let currentUser = null;
 let currentMonth = new Date();
+let usersData = {}; // Cache for users data from server
 
 // Icon mapping
 const activityIcons = {
@@ -32,11 +38,28 @@ document.addEventListener('DOMContentLoaded', function() {
     checkLogin();
 });
 
+// Load users data from server
+async function loadUsersData() {
+    try {
+        const response = await fetch(`${API_URL}/users`);
+        if (response.ok) {
+            usersData = await response.json();
+        } else {
+            console.error('Failed to load users data');
+            usersData = {};
+        }
+    } catch (error) {
+        console.error('Error loading users data:', error);
+        usersData = {};
+    }
+}
+
 // Check login status
-function checkLogin() {
-    const savedUser = localStorage.getItem('currentUser');
+async function checkLogin() {
+    const savedUser = sessionStorage.getItem('currentUser');
     if (savedUser) {
         currentUser = savedUser;
+        await loadUsersData();
         showMainSection();
     }
 }
@@ -54,36 +77,38 @@ async function login() {
     // Hash the password
     const hashedPassword = await hashPassword(password);
 
-    // Get user data from localStorage
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    try {
+        const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password: hashedPassword })
+        });
 
-    if (users[username]) {
-        // Existing user, verify password
-        if (users[username].password === hashedPassword) {
+        const data = await response.json();
+
+        if (response.ok) {
             currentUser = username;
-            localStorage.setItem('currentUser', username);
+            sessionStorage.setItem('currentUser', username);
+            await loadUsersData();
+            if (data.message === 'User created and logged in') {
+                alert('Registration successful!');
+            }
             showMainSection();
         } else {
-            alert('Incorrect password');
+            alert(data.error || 'Login failed');
         }
-    } else {
-        // New user, auto-register
-        users[username] = {
-            password: hashedPassword,
-            checkins: {}
-        };
-        localStorage.setItem('users', JSON.stringify(users));
-        currentUser = username;
-        localStorage.setItem('currentUser', username);
-        alert('Registration successful!');
-        showMainSection();
+    } catch (error) {
+        alert('Network error: ' + error.message);
     }
 }
 
 // Logout
 function logout() {
-    localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('currentUser');
     currentUser = null;
+    usersData = {};
     document.getElementById('loginSection').style.display = 'flex';
     document.getElementById('mainSection').style.display = 'none';
 }
@@ -133,18 +158,17 @@ function updateTodaySection() {
 }
 
 // Toggle check-in (support multiple selections)
-function toggleCheckin(activity) {
+async function toggleCheckin(activity) {
     const today = getTodayString();
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
 
-    if (!users[currentUser]) {
+    if (!usersData[currentUser]) {
         alert('User data error, please login again');
         logout();
         return;
     }
 
     // Get current check-ins (array) or initialize as empty array
-    let currentCheckins = users[currentUser].checkins[today];
+    let currentCheckins = usersData[currentUser].checkins[today];
 
     // Migrate old data format (string) to new format (array)
     if (typeof currentCheckins === 'string') {
@@ -153,38 +177,73 @@ function toggleCheckin(activity) {
         currentCheckins = [];
     }
 
-    // Toggle the activity
+    // Check if already checked in
     const index = currentCheckins.indexOf(activity);
-    if (index > -1) {
-        // Already checked in - remove it
-        currentCheckins.splice(index, 1);
-    } else {
-        // Not checked in - add it
-        currentCheckins.push(activity);
-    }
+    const isAdding = index === -1;
 
-    // Update or delete the check-in
-    if (currentCheckins.length === 0) {
-        delete users[currentUser].checkins[today];
-    } else {
-        users[currentUser].checkins[today] = currentCheckins;
-    }
+    try {
+        if (isAdding) {
+            // Add check-in
+            const response = await fetch(`${API_URL}/checkin`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: currentUser, date: today, activity })
+            });
 
-    localStorage.setItem('users', JSON.stringify(users));
-    updateTodaySection();
-    renderCalendar();
+            if (!response.ok) {
+                const data = await response.json();
+                alert(data.error || 'Failed to add check-in');
+                return;
+            }
+
+            // Update local cache
+            if (!usersData[currentUser].checkins[today]) {
+                usersData[currentUser].checkins[today] = [];
+            }
+            usersData[currentUser].checkins[today].push(activity);
+        } else {
+            // Remove check-in
+            const response = await fetch(`${API_URL}/checkin`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: currentUser, date: today, activity })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                alert(data.error || 'Failed to remove check-in');
+                return;
+            }
+
+            // Update local cache
+            currentCheckins.splice(index, 1);
+            if (currentCheckins.length === 0) {
+                delete usersData[currentUser].checkins[today];
+            } else {
+                usersData[currentUser].checkins[today] = currentCheckins;
+            }
+        }
+
+        updateTodaySection();
+        renderCalendar();
+    } catch (error) {
+        alert('Network error: ' + error.message);
+    }
 }
 
 // Update today's activity list
 function updateTodayActivity() {
     const today = getTodayString();
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
     const activityList = document.getElementById('todayActivityList');
 
     const todayCheckins = [];
 
     // Collect all users who checked in today
-    Object.entries(users).forEach(([username, userData]) => {
+    Object.entries(usersData).forEach(([username, userData]) => {
         if (userData.checkins[today]) {
             let activities = userData.checkins[today];
 
@@ -234,8 +293,7 @@ function updateTodayActivity() {
 // Get today's check-in (returns array)
 function getTodayCheckin() {
     const today = getTodayString();
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
-    let checkins = users[currentUser]?.checkins[today];
+    let checkins = usersData[currentUser]?.checkins[today];
 
     // Migrate old format (string) to new format (array)
     if (typeof checkins === 'string') {
@@ -284,8 +342,7 @@ function renderCalendar() {
     const daysInMonth = lastDay.getDate();
 
     // Get user check-in data
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
-    const checkins = users[currentUser]?.checkins || {};
+    const checkins = usersData[currentUser]?.checkins || {};
 
     // Previous month trailing dates
     const prevMonthLastDay = new Date(year, month, 0).getDate();
@@ -407,16 +464,16 @@ function closeAdminPanel() {
 }
 
 // Load admin data
-function loadAdminData() {
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
+async function loadAdminData() {
+    await loadUsersData();
 
     // Calculate statistics
-    const totalUsers = Object.keys(users).length;
+    const totalUsers = Object.keys(usersData).length;
     let totalCheckins = 0;
     let activeToday = 0;
     const today = getTodayString();
 
-    Object.values(users).forEach(user => {
+    Object.values(usersData).forEach(user => {
         totalCheckins += Object.keys(user.checkins).length;
         if (user.checkins[today]) {
             activeToday++;
@@ -444,7 +501,7 @@ function loadAdminData() {
 
     // Display user list
     let userListHTML = '';
-    Object.entries(users).forEach(([username, userData]) => {
+    Object.entries(usersData).forEach(([username, userData]) => {
         const checkinCount = Object.keys(userData.checkins).length;
         const lastCheckin = Object.keys(userData.checkins).sort().pop() || 'Never';
 
@@ -479,8 +536,7 @@ function toggleUserDetail(username) {
 
     if (detailDiv.style.display === 'none') {
         // Show details
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        const userData = users[username];
+        const userData = usersData[username];
 
         let historyHTML = '<h4>Check-in History:</h4><div class="checkin-history">';
 
@@ -519,53 +575,85 @@ function toggleUserDetail(username) {
 }
 
 // Delete user
-function deleteUser(username) {
+async function deleteUser(username) {
     if (confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) {
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        delete users[username];
-        localStorage.setItem('users', JSON.stringify(users));
+        try {
+            const response = await fetch(`${API_URL}/user/${username}`, {
+                method: 'DELETE'
+            });
 
-        // If deleted user is currently logged in, log them out
-        if (currentUser === username) {
-            logout();
+            if (response.ok) {
+                delete usersData[username];
+
+                // If deleted user is currently logged in, log them out
+                if (currentUser === username) {
+                    logout();
+                }
+
+                await loadAdminData();
+                alert(`User "${username}" has been deleted.`);
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Failed to delete user');
+            }
+        } catch (error) {
+            alert('Network error: ' + error.message);
         }
-
-        loadAdminData();
-        alert(`User "${username}" has been deleted.`);
     }
 }
 
 // Export data
-function exportData() {
-    const users = localStorage.getItem('users') || '{}';
-    const dataStr = JSON.stringify(JSON.parse(users), null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+async function exportData() {
+    try {
+        const response = await fetch(`${API_URL}/export`);
+        if (response.ok) {
+            const data = await response.json();
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
 
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(dataBlob);
-    link.download = `checkin-data-${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `checkin-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
 
-    alert('Data exported successfully!');
+            alert('Data exported successfully!');
+        } else {
+            alert('Failed to export data');
+        }
+    } catch (error) {
+        alert('Network error: ' + error.message);
+    }
 }
 
 // Import data
-function importData(event) {
+async function importData(event) {
     const file = event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
         try {
             const importedData = JSON.parse(e.target.result);
 
             if (confirm('This will replace all existing data. Continue?')) {
-                localStorage.setItem('users', JSON.stringify(importedData));
-                loadAdminData();
-                alert('Data imported successfully!');
+                const response = await fetch(`${API_URL}/import`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(importedData)
+                });
+
+                if (response.ok) {
+                    await loadAdminData();
+                    alert('Data imported successfully!');
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to import data');
+                }
             }
         } catch (error) {
-            alert('Error importing data. Please check the file format.');
+            alert('Error importing data: ' + error.message);
         }
     };
     reader.readAsText(file);
@@ -575,16 +663,33 @@ function importData(event) {
 }
 
 // Clear all data
-function clearAllData() {
+async function clearAllData() {
     if (confirm('⚠️ WARNING: This will delete ALL user data permanently. Are you absolutely sure?')) {
         if (confirm('This action cannot be undone. Click OK to confirm deletion.')) {
-            localStorage.clear();
-            loadAdminData();
-            alert('All data has been cleared.');
+            try {
+                const response = await fetch(`${API_URL}/import`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
 
-            // Log out if someone is logged in
-            if (currentUser) {
-                logout();
+                if (response.ok) {
+                    usersData = {};
+                    await loadAdminData();
+                    alert('All data has been cleared.');
+
+                    // Log out if someone is logged in
+                    if (currentUser) {
+                        logout();
+                    }
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to clear data');
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
             }
         }
     }
