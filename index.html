@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Check-in System</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -68,7 +68,8 @@
 
     <!-- Main Section -->
     <div id="mainSection" style="display: none;">
-        <div class="header">
+        <!-- Desktop Mode Header -->
+        <div class="header desktop-only">
             <h1>Check-in Calendar</h1>
             <div class="user-info">
                 <span id="currentUser"></span>
@@ -76,39 +77,79 @@
             </div>
         </div>
 
-        <!-- Today's Check-in -->
-        <div class="today-checkin">
-            <h2>Today's Check-in (<span id="todayDate"></span>)</h2>
-            <div id="todayStatus"></div>
-            <div class="checkin-options">
-                <button onclick="toggleCheckin('paper')" data-activity="paper">📚 Read Paper</button>
-                <button onclick="toggleCheckin('fitness')" data-activity="fitness">💪 Fitness</button>
-                <button onclick="toggleCheckin('algorithm')" data-activity="algorithm">💻 Algorithm</button>
-                <button onclick="toggleCheckin('quant')" data-activity="quant">📊 Quant Interview</button>
+        <!-- Mobile Mode Header -->
+        <div class="mobile-header mobile-only">
+            <h1>Checkmate</h1>
+            <div class="user-info">
+                <span id="currentUserMobile"></span>
+                <button onclick="logout()" class="icon-btn">🚪</button>
             </div>
         </div>
 
-        <!-- Today's Activity -->
-        <div class="today-activity">
-            <h2>Today's Activity</h2>
-            <p class="activity-subtitle">See who checked in today</p>
-            <div id="todayActivityList"></div>
+        <!-- Mobile Tab Navigation -->
+        <div class="mobile-tabs mobile-only">
+            <button class="tab-btn active" onclick="switchMobileTab('today')" data-tab="today">
+                <span class="tab-icon">✓</span>
+                <span class="tab-label">Today</span>
+            </button>
+            <button class="tab-btn" onclick="switchMobileTab('activity')" data-tab="activity">
+                <span class="tab-icon">👥</span>
+                <span class="tab-label">Activity</span>
+            </button>
+            <button class="tab-btn" onclick="switchMobileTab('calendar')" data-tab="calendar">
+                <span class="tab-icon">📅</span>
+                <span class="tab-label">Calendar</span>
+            </button>
         </div>
 
-        <!-- Calendar View -->
-        <div class="calendar-container">
-            <h2>Monthly Check-in Records</h2>
-            <div class="calendar-header">
-                <button onclick="changeMonth(-1)">←</button>
-                <span id="currentMonth"></span>
-                <button onclick="changeMonth(1)">→</button>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <!-- Today's Check-in -->
+            <div class="today-checkin" data-mobile-tab="today">
+                <h2>Today's Check-in (<span id="todayDate"></span>)</h2>
+                <div id="todayStatus"></div>
+                <div class="checkin-options">
+                    <button onclick="toggleCheckin('paper')" data-activity="paper">
+                        <span class="btn-icon">📚</span>
+                        <span class="btn-label">Read Paper</span>
+                    </button>
+                    <button onclick="toggleCheckin('fitness')" data-activity="fitness">
+                        <span class="btn-icon">💪</span>
+                        <span class="btn-label">Fitness</span>
+                    </button>
+                    <button onclick="toggleCheckin('algorithm')" data-activity="algorithm">
+                        <span class="btn-icon">💻</span>
+                        <span class="btn-label">Algorithm</span>
+                    </button>
+                    <button onclick="toggleCheckin('quant')" data-activity="quant">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-label">Quant Interview</span>
+                    </button>
+                </div>
             </div>
-            <div class="calendar" id="calendar"></div>
-            <div class="legend">
-                <div><span class="legend-item paper">📚</span> Read Paper</div>
-                <div><span class="legend-item fitness">💪</span> Fitness</div>
-                <div><span class="legend-item algorithm">💻</span> Algorithm</div>
-                <div><span class="legend-item quant">📊</span> Quant Interview</div>
+
+            <!-- Today's Activity -->
+            <div class="today-activity" data-mobile-tab="activity">
+                <h2>Today's Activity</h2>
+                <p class="activity-subtitle">See who checked in today</p>
+                <div id="todayActivityList"></div>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="calendar-container" data-mobile-tab="calendar">
+                <h2>Monthly Check-in Records</h2>
+                <div class="calendar-header">
+                    <button onclick="changeMonth(-1)">←</button>
+                    <span id="currentMonth"></span>
+                    <button onclick="changeMonth(1)">→</button>
+                </div>
+                <div class="calendar" id="calendar"></div>
+                <div class="legend">
+                    <div><span class="legend-item paper">📚</span> Read Paper</div>
+                    <div><span class="legend-item fitness">💪</span> Fitness</div>
+                    <div><span class="legend-item algorithm">💻</span> Algorithm</div>
+                    <div><span class="legend-item quant">📊</span> Quant Interview</div>
+                </div>
             </div>
         </div>
     </div>

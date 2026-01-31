@@ -6,25 +6,36 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 20px;
+    transition: all 0.3s ease;
 }
 
-/* 登录界面 */
+/* ==================== COMMON STYLES ==================== */
+
+/* Hide mobile/desktop specific elements by default */
+.mobile-only {
+    display: none !important;
+}
+
+.desktop-only {
+    display: block;
+}
+
+/* ==================== LOGIN SECTION (共用) ==================== */
 #loginSection {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .login-box {
     background: white;
     padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    width: 90%;
     max-width: 400px;
 }
 
@@ -32,15 +43,17 @@ body {
     text-align: center;
     margin-bottom: 30px;
     color: #667eea;
+    font-size: 28px;
 }
 
 .login-box input {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     margin-bottom: 15px;
     border: 2px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
+    transition: border-color 0.3s;
 }
 
 .login-box input:focus {
@@ -50,18 +63,24 @@ body {
 
 .login-box button {
     width: 100%;
-    padding: 12px;
-    background: #667eea;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .login-box button:hover {
-    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.login-box button:active {
+    transform: translateY(0);
 }
 
 .hint {
@@ -71,290 +90,6 @@ body {
     font-size: 14px;
 }
 
-/* 主界面 */
-#mainSection {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.header {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.header h1 {
-    color: #667eea;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-info button {
-    padding: 8px 16px;
-    background: #f44336;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-/* 今日打卡 */
-.today-checkin {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.today-checkin h2 {
-    color: #333;
-    margin-bottom: 20px;
-}
-
-#todayStatus {
-    margin-bottom: 20px;
-    padding: 15px;
-    border-radius: 5px;
-    font-size: 18px;
-    text-align: center;
-}
-
-.checkin-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.checkin-options button {
-    padding: 15px;
-    font-size: 16px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.checkin-options button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.checkin-options button:active {
-    transform: translateY(0);
-}
-
-.checkin-options button.selected {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-/* Today's Activity */
-.today-activity {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.today-activity h2 {
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.activity-subtitle {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-
-#todayActivityList {
-    display: grid;
-    gap: 10px;
-}
-
-.activity-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
-}
-
-.activity-item.current-user {
-    background: #e8eaf6;
-    border-left-color: #4caf50;
-}
-
-.activity-user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.activity-username {
-    font-weight: bold;
-    color: #333;
-}
-
-.activity-badge {
-    background: #667eea;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-}
-
-.activity-type {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    color: #666;
-}
-
-.activity-icon {
-    font-size: 24px;
-}
-
-.no-activity {
-    text-align: center;
-    padding: 30px;
-    color: #999;
-}
-
-/* 日历容器 */
-.calendar-container {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.calendar-header button {
-    padding: 8px 16px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-.calendar-header span {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* 日历网格 */
-.calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.calendar-day {
-    aspect-ratio: 1;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    background: white;
-    position: relative;
-}
-
-.calendar-day.header {
-    background: #667eea;
-    color: white;
-    font-weight: bold;
-    border: none;
-}
-
-.calendar-day.other-month {
-    opacity: 0.3;
-}
-
-.calendar-day.today {
-    border-color: #667eea;
-    border-width: 3px;
-    font-weight: bold;
-}
-
-.calendar-day .date {
-    font-size: 16px;
-    margin-bottom: 5px;
-}
-
-.calendar-day .icon-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-}
-
-.calendar-day .icon-container.icon-single .icon {
-    font-size: 24px;
-}
-
-.calendar-day .icon-container.icon-double {
-    gap: 4px;
-}
-
-.calendar-day .icon-container.icon-double .icon {
-    font-size: 18px;
-}
-
-.calendar-day .icon-container.icon-multiple {
-    gap: 2px;
-}
-
-.calendar-day .icon-container.icon-multiple .icon {
-    font-size: 14px;
-}
-
-.legend {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    padding-top: 20px;
-    border-top: 2px solid #eee;
-}
-
-.legend-item {
-    font-size: 20px;
-    margin-right: 5px;
-}
-
-/* Admin Panel Link */
 .admin-link {
     text-align: center;
     margin-top: 20px;
@@ -362,31 +97,35 @@ body {
     font-size: 12px;
     cursor: pointer;
     text-decoration: underline;
+    transition: color 0.3s;
 }
 
 .admin-link:hover {
     color: #667eea;
 }
 
-/* Admin Login */
-#adminLogin {
+/* ==================== ADMIN STYLES (共用) ==================== */
+#adminLogin, #adminPanel {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1001;
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 .admin-login-box {
     background: white;
     padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    border-radius: 15px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.4);
     width: 100%;
     max-width: 400px;
 }
@@ -408,7 +147,7 @@ body {
     padding: 12px;
     margin-bottom: 15px;
     border: 2px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
 }
 
@@ -424,14 +163,15 @@ body {
     background: #667eea;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s;
 }
 
 .admin-login-box button:hover {
     background: #5568d3;
+    transform: translateY(-2px);
 }
 
 .admin-login-box .secondary-btn {
@@ -451,44 +191,21 @@ body {
     border-radius: 5px;
 }
 
-.admin-hint code {
-    background: #e0e0e0;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: monospace;
-}
-
-/* Admin Panel */
-#adminPanel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 20px;
-    overflow-y: auto;
-}
-
 .admin-container {
     background: white;
-    border-radius: 10px;
+    border-radius: 15px;
     width: 100%;
     max-width: 900px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 50px rgba(0,0,0,0.4);
 }
 
 .admin-header {
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: 20px;
-    border-radius: 10px 10px 0 0;
+    border-radius: 15px 15px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -499,16 +216,23 @@ body {
 
 .admin-header h1 {
     margin: 0;
+    font-size: 24px;
 }
 
 .admin-header button {
-    padding: 8px 16px;
+    padding: 8px 20px;
     background: white;
     color: #667eea;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    transition: all 0.3s;
+}
+
+.admin-header button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .admin-content {
@@ -526,7 +250,6 @@ body {
     border-bottom: 2px solid #eee;
 }
 
-/* User Stats */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -535,31 +258,37 @@ body {
 }
 
 .stat-card {
-    background: #f5f5f5;
-    padding: 20px;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px;
+    border-radius: 12px;
     text-align: center;
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .stat-card .number {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: bold;
-    color: #667eea;
     margin-bottom: 5px;
 }
 
 .stat-card .label {
-    color: #666;
     font-size: 14px;
+    opacity: 0.9;
 }
 
-/* User List */
 .user-item {
     background: #f9f9f9;
     padding: 20px;
     margin-bottom: 15px;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 2px solid #eee;
+    transition: all 0.3s;
+}
+
+.user-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
 .user-item-header {
@@ -588,11 +317,17 @@ body {
 }
 
 .user-item-buttons button {
-    padding: 6px 12px;
+    padding: 8px 16px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+    transition: all 0.3s;
+}
+
+.user-item-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .view-btn {
@@ -605,7 +340,6 @@ body {
     color: white;
 }
 
-/* Data Management */
 .data-buttons {
     display: flex;
     gap: 15px;
@@ -613,31 +347,31 @@ body {
 }
 
 .data-buttons button {
-    padding: 12px 24px;
+    padding: 14px 28px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     transition: all 0.3s;
+    font-weight: bold;
 }
 
 .data-buttons button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .danger-btn {
-    background: #f44336 !important;
+    background: linear-gradient(135deg, #f44336 0%, #e91e63 100%) !important;
 }
 
-/* User Detail Modal */
 .user-detail {
     margin-top: 15px;
     padding: 15px;
     background: white;
-    border-radius: 5px;
+    border-radius: 8px;
     border: 1px solid #ddd;
 }
 
@@ -647,45 +381,717 @@ body {
 }
 
 .checkin-item {
-    padding: 8px;
+    padding: 10px;
     margin-bottom: 5px;
     background: #f5f5f5;
-    border-radius: 4px;
+    border-radius: 6px;
     display: flex;
     justify-content: space-between;
 }
 
-/* 响应式 */
-@media (max-width: 600px) {
-    .calendar {
-        gap: 5px;
-    }
+/* ==================== DESKTOP MODE ==================== */
+body.desktop-mode {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
 
-    .calendar-day {
-        font-size: 12px;
-    }
+body.desktop-mode #mainSection {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-    .calendar-day .date {
-        font-size: 14px;
-    }
+body.desktop-mode .header {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
 
-    .calendar-day .icon {
-        font-size: 18px;
-    }
+body.desktop-mode .header h1 {
+    color: #667eea;
+    font-size: 28px;
+    margin: 0;
+}
 
-    .admin-content {
-        padding: 15px;
-    }
+body.desktop-mode .user-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 16px;
+    color: #333;
+}
 
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
+body.desktop-mode .user-info button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
 
-    .data-buttons {
-        flex-direction: column;
-    }
+body.desktop-mode .user-info button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
 
-    .data-buttons button {
-        width: 100%;
-    }
+body.desktop-mode .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+body.desktop-mode .calendar-container {
+    grid-column: 1 / -1;
+}
+
+body.desktop-mode .today-checkin,
+body.desktop-mode .today-activity,
+body.desktop-mode .calendar-container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+body.desktop-mode .today-checkin h2,
+body.desktop-mode .today-activity h2,
+body.desktop-mode .calendar-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+body.desktop-mode #todayStatus {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+body.desktop-mode .checkin-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+body.desktop-mode .checkin-options button {
+    padding: 20px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+body.desktop-mode .checkin-options button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    border-color: #667eea;
+}
+
+body.desktop-mode .checkin-options button:active {
+    transform: translateY(0);
+}
+
+body.desktop-mode .checkin-options button.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+body.desktop-mode .checkin-options .btn-icon {
+    font-size: 28px;
+}
+
+body.desktop-mode .checkin-options .btn-label {
+    font-weight: bold;
+}
+
+body.desktop-mode .activity-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+body.desktop-mode #todayActivityList {
+    display: grid;
+    gap: 12px;
+}
+
+body.desktop-mode .activity-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s;
+}
+
+body.desktop-mode .activity-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+body.desktop-mode .activity-item.current-user {
+    background: #e8eaf6;
+    border-left-color: #4caf50;
+}
+
+body.desktop-mode .activity-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+body.desktop-mode .activity-username {
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+body.desktop-mode .activity-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+body.desktop-mode .activity-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #666;
+}
+
+body.desktop-mode .activity-icon {
+    font-size: 28px;
+}
+
+body.desktop-mode .no-activity {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 16px;
+}
+
+body.desktop-mode .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+body.desktop-mode .calendar-header button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+body.desktop-mode .calendar-header button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+body.desktop-mode .calendar-header span {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+}
+
+body.desktop-mode .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+body.desktop-mode .calendar-day {
+    aspect-ratio: 1;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    background: white;
+    position: relative;
+    transition: all 0.3s;
+}
+
+body.desktop-mode .calendar-day:hover:not(.header):not(.other-month) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1;
+}
+
+body.desktop-mode .calendar-day.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+
+body.desktop-mode .calendar-day.other-month {
+    opacity: 0.3;
+}
+
+body.desktop-mode .calendar-day.today {
+    border-color: #667eea;
+    border-width: 3px;
+    font-weight: bold;
+    background: #e8eaf6;
+}
+
+body.desktop-mode .calendar-day .date {
+    font-size: 16px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+body.desktop-mode .calendar-day .icon-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+}
+
+body.desktop-mode .calendar-day .icon-container.icon-single .icon {
+    font-size: 26px;
+}
+
+body.desktop-mode .calendar-day .icon-container.icon-double {
+    gap: 4px;
+}
+
+body.desktop-mode .calendar-day .icon-container.icon-double .icon {
+    font-size: 20px;
+}
+
+body.desktop-mode .calendar-day .icon-container.icon-multiple {
+    gap: 2px;
+}
+
+body.desktop-mode .calendar-day .icon-container.icon-multiple .icon {
+    font-size: 16px;
+}
+
+body.desktop-mode .legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+    font-size: 16px;
+}
+
+body.desktop-mode .legend-item {
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+/* ==================== MOBILE MODE ==================== */
+body.mobile-mode {
+    background: #f5f5f5;
+    padding: 0;
+}
+
+body.mobile-mode .mobile-only {
+    display: flex !important;
+}
+
+body.mobile-mode .desktop-only {
+    display: none !important;
+}
+
+body.mobile-mode #mainSection {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+body.mobile-mode .mobile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+
+body.mobile-mode .mobile-header h1 {
+    font-size: 22px;
+    margin: 0;
+}
+
+body.mobile-mode .mobile-header .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
+
+body.mobile-mode .mobile-header .icon-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+body.mobile-mode .mobile-header .icon-btn:active {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+}
+
+body.mobile-mode .mobile-tabs {
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    border-bottom: 1px solid #eee;
+}
+
+body.mobile-mode .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #999;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+body.mobile-mode .tab-btn.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+body.mobile-mode .tab-btn .tab-icon {
+    font-size: 22px;
+}
+
+body.mobile-mode .tab-btn .tab-label {
+    font-size: 11px;
+    font-weight: bold;
+}
+
+body.mobile-mode .content-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #f5f5f5;
+}
+
+body.mobile-mode .today-checkin,
+body.mobile-mode .today-activity,
+body.mobile-mode .calendar-container {
+    background: white;
+    padding: 20px;
+    min-height: calc(100vh - 120px);
+}
+
+body.mobile-mode .today-checkin h2,
+body.mobile-mode .today-activity h2,
+body.mobile-mode .calendar-container h2 {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+body.mobile-mode #todayStatus {
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 16px;
+    text-align: center;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+body.mobile-mode .checkin-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+body.mobile-mode .checkin-options button {
+    padding: 0;
+    height: 120px;
+    border: 2px solid #ddd;
+    border-radius: 15px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+body.mobile-mode .checkin-options button:active {
+    transform: scale(0.95);
+}
+
+body.mobile-mode .checkin-options button.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transform: scale(1.05);
+}
+
+body.mobile-mode .checkin-options .btn-icon {
+    font-size: 40px;
+}
+
+body.mobile-mode .checkin-options .btn-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+body.mobile-mode .activity-subtitle {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+body.mobile-mode #todayActivityList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+body.mobile-mode .activity-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+
+body.mobile-mode .activity-item.current-user {
+    background: linear-gradient(135deg, #e8eaf6 0%, #f3e5f5 100%);
+    border-left-color: #4caf50;
+}
+
+body.mobile-mode .activity-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+body.mobile-mode .activity-username {
+    font-weight: bold;
+    color: #333;
+    font-size: 15px;
+}
+
+body.mobile-mode .activity-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+}
+
+body.mobile-mode .activity-type {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+}
+
+body.mobile-mode .activity-icon {
+    font-size: 26px;
+}
+
+body.mobile-mode .no-activity {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 15px;
+}
+
+body.mobile-mode .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+body.mobile-mode .calendar-header button {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+body.mobile-mode .calendar-header button:active {
+    transform: scale(0.95);
+}
+
+body.mobile-mode .calendar-header span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+body.mobile-mode .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+body.mobile-mode .calendar-day {
+    aspect-ratio: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    background: white;
+    position: relative;
+}
+
+body.mobile-mode .calendar-day.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    border: none;
+    font-size: 12px;
+}
+
+body.mobile-mode .calendar-day.other-month {
+    opacity: 0.3;
+}
+
+body.mobile-mode .calendar-day.today {
+    border-color: #667eea;
+    border-width: 2px;
+    font-weight: bold;
+    background: #e8eaf6;
+}
+
+body.mobile-mode .calendar-day .date {
+    font-size: 13px;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+
+body.mobile-mode .calendar-day .icon-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1px;
+}
+
+body.mobile-mode .calendar-day .icon-container.icon-single .icon {
+    font-size: 18px;
+}
+
+body.mobile-mode .calendar-day .icon-container.icon-double {
+    gap: 2px;
+}
+
+body.mobile-mode .calendar-day .icon-container.icon-double .icon {
+    font-size: 14px;
+}
+
+body.mobile-mode .calendar-day .icon-container.icon-multiple {
+    gap: 1px;
+}
+
+body.mobile-mode .calendar-day .icon-container.icon-multiple .icon {
+    font-size: 11px;
+}
+
+body.mobile-mode .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+    font-size: 14px;
+}
+
+body.mobile-mode .legend > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+body.mobile-mode .legend-item {
+    font-size: 20px;
+    margin-right: 6px;
+}
+
+/* Mobile Mode - Login adjustments */
+body.mobile-mode #loginSection {
+    padding: 20px;
+}
+
+body.mobile-mode .login-box {
+    max-width: 100%;
 }

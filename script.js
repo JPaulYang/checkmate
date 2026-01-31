@@ -3,6 +3,33 @@ const API_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:3000/api'
     : `${window.location.origin}/api`;
 
+// Device detection - detect mobile or desktop
+function detectDevice() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+    const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const screenWidth = window.innerWidth;
+
+    // Consider as mobile if:
+    // 1. User agent indicates mobile device (excluding tablets)
+    // 2. Screen width is less than 768px
+    // 3. Touch device with small screen
+    if ((isMobile && !isTablet) || (screenWidth < 768 && isTouchDevice)) {
+        document.body.classList.add('mobile-mode');
+        document.body.classList.remove('desktop-mode');
+        console.log('Mobile mode activated');
+    } else {
+        document.body.classList.add('desktop-mode');
+        document.body.classList.remove('mobile-mode');
+        console.log('Desktop mode activated');
+    }
+}
+
+// Detect device on load and on resize
+detectDevice();
+window.addEventListener('resize', detectDevice);
+
 // Global variables
 let currentUser = null;
 let currentMonth = new Date();
@@ -33,9 +60,34 @@ async function hashPassword(password) {
     return hashHex;
 }
 
+// Mobile tab switching
+function switchMobileTab(tabName) {
+    // Update active tab button
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tabName) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Show/hide corresponding sections
+    document.querySelectorAll('[data-mobile-tab]').forEach(section => {
+        if (section.dataset.mobileTab === tabName) {
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     checkLogin();
+    // Initialize mobile tabs
+    if (document.body.classList.contains('mobile-mode')) {
+        switchMobileTab('today');
+    }
 });
 
 // Load users data from server
@@ -118,9 +170,15 @@ function showMainSection() {
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('mainSection').style.display = 'block';
     document.getElementById('currentUser').textContent = `Welcome, ${currentUser}!`;
+    document.getElementById('currentUserMobile').textContent = currentUser;
 
     updateTodaySection();
     renderCalendar();
+
+    // Initialize mobile tab if in mobile mode
+    if (document.body.classList.contains('mobile-mode')) {
+        switchMobileTab('today');
+    }
 }
 
 // Update today's check-in section
